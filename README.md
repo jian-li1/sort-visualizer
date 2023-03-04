@@ -8,12 +8,16 @@ Currenly we have Bubble Sort, Selection Sort, and Insertion Sort, but will be ad
 If your system doesn't have Python installed already, install it <a href="https://www.python.org/downloads/">here</a>
 <br>
 Once you have Python installed, you need to install the PyGame library:
-<br>
-```pip install pygame```
-<br>
-Run this command to run the prgram:
-<br>
-```python sort_visual.py```
+
+```bash
+pip install pygame
+```
+
+Run this command to run the program:
+
+```bash
+python sort_visual.py
+```
 
 # Download
 <b>MacOS</b>: <a href="https://github.com/Jian-Li1/sort-visualizer/releases/download/v1.0.0/Sort-Visualizer-macOS.zip">Download</a>
