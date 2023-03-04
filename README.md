@@ -1,8 +1,8 @@
 # Sort Visualizer in Python
-A Python application using Pygame for visualizing various sort algorithms.
+A Python application using Pygame for visualizing various sorting algorithms.
 <img width="600" alt="Sort Visualizer Preview" src="https://user-images.githubusercontent.com/86862325/222879961-69a59ff5-09f2-4f07-a17f-2c27a0c98156.png">
 <br>
-Currenly we have Bubble Sort, Selection Sort, and Insertion Sort, but will be adding a few more algorithms in future releases.
+Currenly we have Bubble Sort, Selection Sort, and Insertion Sort, but will be adding a few more sorting algorithms in future releases.
 
 # Usage
 If your system doesn't have Python installed already, install it <a href="https://www.python.org/downloads/" target="_blank">here</a>
