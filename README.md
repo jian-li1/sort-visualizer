@@ -5,7 +5,7 @@ A Python application using Pygame for visualizing various sort algorithms.
 Currenly we have Bubble Sort, Selection Sort, and Insertion Sort, but will be adding a few more algorithms in future releases.
 
 # Usage
-If your system doesn't have Python installed already, install it <a href="https://www.python.org/downloads/">here</a>
+If your system doesn't have Python installed already, install it <a href="https://www.python.org/downloads/" target="_blank">here</a>
 <br>
 Once you have Python installed, you need to install the PyGame library:
 
@@ -20,7 +20,7 @@ python sort_visual.py
 ```
 
 # Download
-<b>MacOS</b>: <a href="https://github.com/Jian-Li1/sort-visualizer/releases/download/v1.0.0/Sort-Visualizer-macOS.zip" target="_blank">Download</a>
+<b>MacOS</b>: <a href="https://github.com/Jian-Li1/sort-visualizer/releases/download/v1.0.0/Sort-Visualizer-macOS.zip">Download</a>
 <br>
 Note: macOS might block the application from opening so you need to go to System Preferences -> Security and Privacy -> General and click on "Open anyway"
 <br>
