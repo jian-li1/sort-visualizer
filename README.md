@@ -7,4 +7,5 @@ A Python application using PyGame for visualizing various sort algorithms.
 <br>
 Note: macOS might block the application from opening so you need to go to System Preferences -> Security and Privacy -> General and click on "Open anyway"
 <br>
+<br>
 <b>Windows</b>: <a href="https://github.com/Jian-Li1/sort-visualizer/releases/download/v1.0.0/Sort-Visualizer-Windows.zip">Download</a>
