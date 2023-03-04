@@ -6,7 +6,7 @@ Currenly we have Bubble Sort, Selection Sort, and Insertion Sort, but will be ad
 
 # Usage
 If your system doesn't have Python installed already, install it <a href="https://www.python.org/downloads/" target="_blank">here</a>
-<br>
+<br><br>
 Once you have Python installed, you need to install the PyGame library:
 
 ```bash
