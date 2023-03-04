@@ -5,4 +5,5 @@ A Python application using PyGame for visualizing various sort algorithms.
 
 # Download
 Windows: <a href="https://github.com/Jian-Li1/sort-visualizer/releases/download/v1.0.0/Sort.Visualizer.exe">Sort Visualizer.exe</a>
+##
 MacOS: 
