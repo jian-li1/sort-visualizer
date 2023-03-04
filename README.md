@@ -10,4 +10,4 @@ Note: macOS might block the application from opening so you need to go to System
 <br>
 <b>Windows</b>: <a href="https://github.com/Jian-Li1/sort-visualizer/releases/download/v1.0.0/Sort-Visualizer-Windows.zip">Download</a>
 <br>
-Note: Some browsers (such as Google Chrome) might mistakenly block the file when it's downloaded. In this case you want to continue downloading the file anyway on your browser
+Note: Some browsers (such as Google Chrome) might mistakenly block the file when it's downloaded. In this case you want to click on "Continue" on your broswer to finish downloading the file.
