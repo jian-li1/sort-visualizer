@@ -64,6 +64,8 @@ playing = threading.Event() # Is set when sorting operation is being played
 swapping = threading.Event() # Is set when swapping is being animated
 hovering = threading.Event() # Is set when user hovers over a button; animates color change of the button
 
+# Create a clock object for controlling frame rate
+clock = pygame.time.Clock()
 # Frames per second
 FPS = 60
 idle_FPS = 10
@@ -171,26 +173,24 @@ def swap_rectangles(rectangles: list, swapping: threading.Event, rect1: int, rec
     distance = rect2_pos - rect1_pos
     scaling = int(distance / (RECT_WIDTH + RECT_SPACING))
     
-    pixel_per_frame = PIXEL_CHANGE[speed_adjust[0]] * scaling * 60 / FPS
+    # Scale the pixel per frame according to the current FPS
+    pixel_per_frame = PIXEL_CHANGE[speed_adjust[0]] * scaling * (60 / FPS)
 
     # Change both rectangles' x coordinates until one approaches the other's position
     if rectangles[rect1].x < rect2_pos:
         if rect2_pos - rectangles[rect1].x >= pixel_per_frame:
-            rectangles[rect1].x += PIXEL_CHANGE[speed_adjust[0]] * scaling
+            rectangles[rect1].x += pixel_per_frame
         # If pixel difference between destination and rectangle 1 is less than the pixels per frame, change pixel by the difference instead
         else:
             rectangles[rect1].x += rectangles[rect2].x - rect1_pos
     if rectangles[rect2].x > rect1_pos:
         if rectangles[rect2].x - rect1_pos >= pixel_per_frame:
-            rectangles[rect2].x -= PIXEL_CHANGE[speed_adjust[0]] * scaling
+            rectangles[rect2].x -= pixel_per_frame
         # If pixel difference between rectangle 2 and destination is less than the pixels per frame, change pixel by the difference instead
         else:
             rectangles[rect2].x -= rectangles[rect2].x - rect1_pos
 
 def main():
-    # Create a clock object for controlling frame rate
-    clock = pygame.time.Clock()
-
     # Set up the font object
     default_font_size = 24
     font = pygame.font.SysFont(None, default_font_size)
@@ -221,18 +221,17 @@ def main():
     # Initialize list for storing elements and rectangles
     rectangles = []
 
+    # Randomize the elements
     randomize_array(rectangles)
 
     # Speed adjust of sorting
     speed_adjust = [len(PIXEL_CHANGE) // 3]
-    scan_speed = [(RECT_WIDTH + RECT_SPACING) / PIXEL_CHANGE[speed_adjust[0]] / (60 * FPS / 60)]
+    scan_speed = [(RECT_WIDTH + RECT_SPACING) / PIXEL_CHANGE[speed_adjust[0]] / idle_FPS / 60 * idle_FPS]
 
     # Main operation of the program
     while True:
         # Fill user interface with white background
         screen.fill(WHITE)
-
-        scan_speed[0] = (RECT_WIDTH + RECT_SPACING) / PIXEL_CHANGE[speed_adjust[0]] / (60 * FPS / 60)
 
         for event in pygame.event.get():
             # Abort the program and halt all sorting operations when user X out the window
@@ -293,15 +292,6 @@ def main():
                     if btn.rect.collidepoint(event.pos):
                         btn.color = HOVER
 
-        # Freeze the window if minimized (including during sorting operation) and reduce FPS to 1
-        if not pygame.display.get_active():
-            playing.clear()
-            idle_FPS = 1
-        # Increase FPS when window is opened again
-        elif pygame.display.get_active():
-            if pause_btn.text == "Pause" and sorting.is_set(): playing.set()
-            idle_FPS = 10
-
         # Make idle buttons hidden and action buttons shown when sorting
         if sorting.is_set(): idle_buttons_visible, action_buttons_visible = False, True
         else: idle_buttons_visible, action_buttons_visible = True, False
@@ -314,30 +304,33 @@ def main():
         if swapping.is_set():
             # Animate the swapping of the two rectangles
             swap_rectangles(rectangles, swapping, swap_rect['rect1'], swap_rect['rect2'], swap_rect['rect1_pos'], swap_rect['rect2_pos'], speed_adjust)
-
-        # Display all the rectangles
-        draw_rectangles(rectangles)
         
-        if idle_buttons_visible and len(threading.enumerate()) == 1:
-            # Display "idle" buttons when sorting operation is not active
-            draw_buttons(idle_buttons)
-        elif sorting.is_set():
-            # Display "action" buttons when sorting operation is active
-            screen.blit(adjust_speed_text, (SCREEN_WIDTH / 2 - adjust_speed_text.get_width() / 2, SCREEN_HEIGHT - slow_down_btn.height / 2  - MARGIN[1] -  adjust_speed_text.get_height() / 2))
-            draw_buttons(action_buttons)
+        if pygame.display.get_active():
+            if idle_buttons_visible and len(threading.enumerate()) == 1:
+                # Display "idle" buttons when sorting operation is not active
+                draw_buttons(idle_buttons)
+            elif sorting.is_set():
+                # Display "action" buttons when sorting operation is active
+                screen.blit(adjust_speed_text, (SCREEN_WIDTH / 2 - adjust_speed_text.get_width() / 2, SCREEN_HEIGHT - slow_down_btn.height / 2  - MARGIN[1] -  adjust_speed_text.get_height() / 2))
+                draw_buttons(action_buttons)
 
-        # Display FPS
-        fps_text = font.render("FPS: " + str(int(clock.get_fps())), True, BLACK)
-        screen.blit(fps_text, (SCREEN_WIDTH - fps_text.get_width() - MARGIN[0], SCREEN_HEIGHT - fps_text.get_height() - MARGIN[1]))
+            # Display FPS
+            fps_text = font.render("FPS: " + str(int(clock.get_fps())), True, BLACK)
+            screen.blit(fps_text, (SCREEN_WIDTH - fps_text.get_width() - MARGIN[0], SCREEN_HEIGHT - fps_text.get_height() - MARGIN[1]))
 
-        # Update the screen
-        pygame.display.flip()
+        # Update the screen and display all rectangles if window is opened
+            draw_rectangles(rectangles)
+            pygame.display.flip()
 
-        if ((sorting.is_set() and playing.is_set()) or hovering.is_set() or swapping.is_set()) and pygame.display.get_active():
+        if (sorting.is_set() and playing.is_set()) or hovering.is_set() or swapping.is_set():
             # Set FPS to 60 if program is currently playing sorting animation or button hovering animation or swapping animation
+            # Scale scan speed according to the current FPS
+            scan_speed[0] = (RECT_WIDTH + RECT_SPACING) / PIXEL_CHANGE[speed_adjust[0]] / 60 / FPS * 60
             clock.tick(FPS)
         else:
             # Lower FPS if program is idle
+            # Scale scan speed according to the current FPS
+            scan_speed[0] = (RECT_WIDTH + RECT_SPACING) / PIXEL_CHANGE[speed_adjust[0]] / idle_FPS / 60 * idle_FPS
             clock.tick(idle_FPS)
 
 if __name__ == "__main__":
