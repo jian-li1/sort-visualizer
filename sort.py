@@ -5,9 +5,11 @@ import threading
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 
+# Create a threading lock to ensure that only one sorting thread runs at a time
 lock = threading.Lock()
 
-def bubble_sort(array: list, size: int, swap_index: dict, swapping: threading.Event, sorting: threading.Event, playing: threading.Event, scan_speed:  list):
+# Bubble Sort
+def bubble_sort(array: list, size: int, swap_index: dict, swapping: threading.Event, sorting: threading.Event, playing: threading.Event, scan_speed: list) -> None:
     time.sleep(0.2)
     lock.acquire()
     i = 0
@@ -17,8 +19,6 @@ def bubble_sort(array: list, size: int, swap_index: dict, swapping: threading.Ev
             # Highlight the two elements being compared
             array[j].color = RED
             array[j+1].color = RED
-            
-            # Abort sorting operation if user clicked on "Stop"
 
             time.sleep(scan_speed[0])
             
@@ -37,7 +37,9 @@ def bubble_sort(array: list, size: int, swap_index: dict, swapping: threading.Ev
                     # Swap elements
                     array[j], array[j+1] = array[j+1], array[j]
 
+            # Pause if requested by user
             playing.wait()
+            # Abort sorting operation if user clicked on "Stop"
             if not sorting.is_set(): break
 
             array[j].color = WHITE
@@ -48,9 +50,11 @@ def bubble_sort(array: list, size: int, swap_index: dict, swapping: threading.Ev
 
     lock.release()
     sorting.clear()
+    playing.clear()
     return
 
-def selection_sort(array: list, size: int, swap_index: dict, swapping: threading.Event, sorting: threading.Event, playing: threading.Event, scan_speed:  list):
+# Selection Sort
+def selection_sort(array: list, size: int, swap_index: dict, swapping: threading.Event, sorting: threading.Event, playing: threading.Event, scan_speed: list) -> None:
     time.sleep(0.2)
     lock.acquire()
     i = 0
@@ -58,7 +62,9 @@ def selection_sort(array: list, size: int, swap_index: dict, swapping: threading
         min = array[i]
         min_index = i
 
+        # Pause if requested by user
         playing.wait()
+        # Abort sorting operation if user clicked on "Stop"
         if not sorting.is_set(): break
 
         # Highlight the rectangle with the minimum value 
@@ -70,7 +76,9 @@ def selection_sort(array: list, size: int, swap_index: dict, swapping: threading
             # Highlight the rectangle being scanned
             array[j].color = RED
             
+            # Pause if requested by user
             playing.wait()
+            # Abort sorting operation if user clicked on "Stop"
             if not sorting.is_set(): break
             
             time.sleep(scan_speed[0])
@@ -107,9 +115,10 @@ def selection_sort(array: list, size: int, swap_index: dict, swapping: threading
     array[min_index].color = WHITE
     lock.release()
     sorting.clear()
+    playing.clear()
     return
 
-def insertion_sort(array: list, size: int, swap_index: dict, swapping: threading.Event, sorting: threading.Event, playing: threading.Event, scan_speed:  list):
+def insertion_sort(array: list, size: int, swap_index: dict, swapping: threading.Event, sorting: threading.Event, playing: threading.Event, scan_speed:  list) -> None:
     time.sleep(0.2)
     lock.acquire()
     index = 0
@@ -117,7 +126,9 @@ def insertion_sort(array: list, size: int, swap_index: dict, swapping: threading
         i = index
         j = i + 1
 
+        # Pause if requested by user
         playing.wait()
+        # Abort sorting operation if user clicked on "Stop"
         if not sorting.is_set(): break
 
         while array[j].num < array[i].num and i >= 0 and sorting.is_set():
@@ -141,7 +152,9 @@ def insertion_sort(array: list, size: int, swap_index: dict, swapping: threading
                 # Swap elements
                 array[i], array[j] = array[j], array[i]
             
+            # Pause if requested by user
             playing.wait()
+            # Abort sorting operation if user clicked on "Stop"
             if not sorting.is_set(): break
 
             array[i].color = WHITE
@@ -161,4 +174,5 @@ def insertion_sort(array: list, size: int, swap_index: dict, swapping: threading
         
     lock.release()
     sorting.clear()
+    playing.clear()
     return
