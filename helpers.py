@@ -3,6 +3,7 @@ import random
 import pygame
 from settings import *
 
+
 class Rectangle():
     def __init__(self, number: int, x: Union[int, float], y: Union[int, float], height: Union[int, float], font: int=24, color: tuple=WHITE) -> None:
         self.num = number
