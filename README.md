@@ -23,9 +23,9 @@ python sort_visual.py
 Note: Some browsers (such as Google Chrome) might mistakenly block the file when it's downloaded. In this case you want to click on "Continue" or "Keep" after the file is downloaded.
 <br>
 <br>
-<b>MacOS</b>: <a href="https://github.com/Jian-Li1/sort-visualizer/releases/download/v1.1.1/Sort-Visualizer-macOS.zip">Download</a>
+<b>MacOS</b>: <a href="https://github.com/Jian-Li1/sort-visualizer/releases/download/v1.1.2/Sort-Visualizer-macOS.zip">Download</a>
 <br>
 Note: macOS might block the application from opening so you need to go to System Preferences -> Security and Privacy -> General and click on "Open anyway"
 <br>
 <br>
-<b>Windows</b>: <a href="https://github.com/Jian-Li1/sort-visualizer/releases/download/v1.1.1/Sort-Visualizer-Windows.zip">Download</a>
+<b>Windows</b>: <a href="https://github.com/Jian-Li1/sort-visualizer/releases/download/v1.1.2/Sort-Visualizer-Windows.zip">Download</a>
