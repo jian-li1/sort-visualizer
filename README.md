@@ -16,7 +16,7 @@ pip install pygame
 Run this command to run the program:
 
 ```bash
-python sort_visual.py
+python main.py
 ```
 
 # Download
