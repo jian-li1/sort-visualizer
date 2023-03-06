@@ -1,9 +1,10 @@
 import pygame
 import random
 import threading
-from sort import bubble_sort, selection_sort, insertion_sort
+from sort import *
 import os
 import sys
+import platform
 from typing import Union
 
 # Import all modules from pygame
@@ -13,7 +14,11 @@ pygame.font.init()
 # If running in PyInstaller bundle, get the path to the root directory of the bundle using the sys._MEIPASS attribute
 # Else if running in normal Python runtime environment, get the path to the directory containing the Python script
 root_dir = sys._MEIPASS if getattr(sys, 'frozen', False) else os.path.dirname(os.path.abspath(__file__))
-img_path = os.path.join(root_dir, 'assets', 'icon_1024x1024.png')
+
+if platform.system() == "Darwin":
+    img_path = os.path.join(root_dir, 'assets', 'icon_1024x1024.png')
+else:
+    img_path = os.path.join(root_dir, 'assets', 'app_icon.jpg')
 
 # Display application icon
 icon_surface = pygame.image.load(img_path)
@@ -44,12 +49,8 @@ S_BTN_WIDTH = 100
 BTN_SPACING = 5
 
 # The rate at which the rectangles move
-PIXEL_CHANGE = [] #[i for i in range(1, RECT_WIDTH + RECT_SPACING + 1) if (RECT_WIDTH + RECT_SPACING) % i == 0]
-i = 0.25
-while i < RECT_WIDTH + RECT_SPACING + 1:
-    if (RECT_WIDTH + RECT_SPACING) % i == 0:
-        PIXEL_CHANGE.append(i)
-    i += 0.25
+PIXEL_CHANGE = [i / 100 for i in range(25, (RECT_WIDTH + RECT_SPACING + 1) * 100, 25) if (RECT_WIDTH + RECT_SPACING) % (i / 100) == 0] 
+#[i for i in range(1, RECT_WIDTH + RECT_SPACING + 1) if (RECT_WIDTH + RECT_SPACING) % i == 0]
 
 # Infomation for swapping two rectangles: both rectangles' index in the array and their positions (x coordinates)
 swap_rect = {'rect1': None, 'rect1_pos': None, 'rect2': None, 'rect2_pos': None}
@@ -146,18 +147,22 @@ def draw_buttons(buttons: list) -> None:
     global idle_FPS
     idle_FPS = 10
     # Rate at which the color changes per frame
-    rgb_change = FPS / 60 * 15 * 60 / FPS
+    rgb_change = 30
     hovering.clear()
     for btn in buttons:
         # Animate color change of the button when cursor hovers over it
         # Also animates color change when button is inactivated
         if (btn.rect.collidepoint(pygame.mouse.get_pos()) and btn.active or not btn.active) and btn.color > HOVER and not btn.clicked:
             hovering.set()
-            btn.color = (btn.color[0] - rgb_change, btn.color[1] - rgb_change, btn.color[2] - rgb_change)
+            btn.color = (btn.color[0] - min(rgb_change, btn.color[0] - HOVER[0]),
+                         btn.color[1] - min(rgb_change, btn.color[1] - HOVER[1]),
+                         btn.color[2] - min(rgb_change, btn.color[2] - HOVER[2]))
         # Revert back to original color of the button when cursor no longer hovers over it
         elif not btn.rect.collidepoint(pygame.mouse.get_pos()) and btn.color < WHITE and btn.active and not btn.clicked:
             hovering.set()
-            btn.color = (btn.color[0] + rgb_change, btn.color[1] + rgb_change, btn.color[2] + rgb_change)
+            btn.color = (btn.color[0] + min(rgb_change, WHITE[0] - btn.color[0]),
+                         btn.color[1] + min(rgb_change, WHITE[1] - btn.color[1]),
+                         btn.color[2] + min(rgb_change, WHITE[2] - btn.color[2]))
         if btn.color == HOVER and btn.active:
             idle_FPS = 20
         btn.draw()
@@ -178,17 +183,11 @@ def swap_rectangles(rectangles: list, swapping: threading.Event, rect1: int, rec
 
     # Change both rectangles' x coordinates until one approaches the other's position
     if rectangles[rect1].x < rect2_pos:
-        if rect2_pos - rectangles[rect1].x >= pixel_per_frame:
-            rectangles[rect1].x += pixel_per_frame
         # If pixel difference between destination and rectangle 1 is less than the pixels per frame, change pixel by the difference instead
-        else:
-            rectangles[rect1].x += rectangles[rect2].x - rect1_pos
+        rectangles[rect1].x += min(pixel_per_frame, rect2_pos - rectangles[rect1].x)
     if rectangles[rect2].x > rect1_pos:
-        if rectangles[rect2].x - rect1_pos >= pixel_per_frame:
-            rectangles[rect2].x -= pixel_per_frame
         # If pixel difference between rectangle 2 and destination is less than the pixels per frame, change pixel by the difference instead
-        else:
-            rectangles[rect2].x -= rectangles[rect2].x - rect1_pos
+        rectangles[rect2].x -= min(pixel_per_frame, rectangles[rect2].x - rect1_pos)
 
 def main():
     # Set up the font object
@@ -199,7 +198,9 @@ def main():
     iter_sort = {
         "Bubble Sort": bubble_sort,
         "Selection Sort": selection_sort,
-        "Insertion Sort": insertion_sort
+        "Insertion Sort": insertion_sort,
+        #"Merge Sort": None,
+        #"Quick Sort": None,
     }
 
     # Create interactive buttons
@@ -214,8 +215,8 @@ def main():
 
     # Seperate buttons displayed when program is performing sort and when it's idle
     idle_buttons = [sort_btn for sort_btn in iter_sort.keys()] + [randomize_btn]
-    idle_buttons_visible = True
     action_buttons = [stop_btn, pause_btn, slow_down_btn, speed_up_btn]
+    idle_buttons_visible = True
     action_buttons_visible = False
 
     # Initialize list for storing elements and rectangles
