@@ -7,6 +7,7 @@ from sort import *
 from settings import *
 from helpers import *
 
+
 # Import all modules from pygame
 pygame.init()
 pygame.font.init()
