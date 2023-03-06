@@ -40,8 +40,8 @@ def main():
         "Bubble Sort": bubble_sort,
         "Selection Sort": selection_sort,
         "Insertion Sort": insertion_sort,
-        #"Merge Sort": None,
-        #"Quick Sort": None,
+        #"Merge Sort": None, # In development
+        #"Quick Sort": None # In development
     }
 
     # Create interactive buttons
