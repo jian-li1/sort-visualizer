@@ -2,10 +2,6 @@ import time
 import threading
 from settings import *
 
-# RGB number for each color
-RED = (255, 0, 0)
-WHITE = (255, 255, 255)
-
 # Create a threading lock to ensure that only one sorting thread runs at a time
 lock = threading.Lock()
 
