@@ -1,8 +1,5 @@
 import pygame
 import threading
-import os
-import sys
-import platform
 from sort import *
 from settings import *
 from helpers import *
@@ -10,22 +7,6 @@ from helpers import *
 # Import all modules from pygame
 pygame.init()
 pygame.font.init()
-
-# If running in PyInstaller bundle, get the path to the root directory of the bundle using the sys._MEIPASS attribute
-# Else if running in normal Python runtime environment, get the path to the directory containing the Python script
-root_dir = sys._MEIPASS if getattr(sys, 'frozen', False) else os.path.dirname(os.path.abspath(__file__))
-
-try:
-    if platform.system() == "Darwin":
-        img_path = os.path.join(root_dir, 'assets', 'icon_1024x1024.png')
-    else:
-        img_path = os.path.join(root_dir, 'assets', 'app_icon.jpg')
-except FileNotFoundError:
-    pass
-
-# Display application icon
-icon_surface = pygame.image.load(img_path)
-pygame.display.set_icon(icon_surface)
 
 # Create a clock object for controlling frame rate
 clock = pygame.time.Clock()
