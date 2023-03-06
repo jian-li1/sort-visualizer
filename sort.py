@@ -2,6 +2,7 @@ import time
 import threading
 
 # RGB number for each color
+
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 

@@ -7,6 +7,7 @@ import sys
 import platform
 from typing import Union
 
+
 # Import all modules from pygame
 pygame.init()
 pygame.font.init()
