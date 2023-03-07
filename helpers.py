@@ -50,8 +50,9 @@ class Button():
     
     def click(self) -> None:
         # User clicked on a button
-        self.clicked = True
-        self.color = CLICKED
+        if self.active:
+            self.clicked = True
+            self.color = CLICKED
 
 def create_sort_btns(sort_dict: dict) -> dict:
     sort_algs = dict()
@@ -76,46 +77,42 @@ def draw_rectangles(rectangles: list) -> None:
         rectangle.draw()
 
 def draw_buttons(buttons: list) -> None:
-    FPS['idle'] = 10
     # Rate at which the color changes per frame
     rgb_change = 30
-    hovering.clear()
     for btn in buttons:
         # Animate color change of the button when cursor hovers over it
         # Also animates color change when button is inactivated
         if btn.rect.collidepoint(pygame.mouse.get_pos()) and btn.color > HOVER and not btn.clicked:
-            hovering.set()
+            btn_animate.set()
             btn.color = (btn.color[0] - min(rgb_change, btn.color[0] - HOVER[0]),
                          btn.color[1] - min(rgb_change, btn.color[1] - HOVER[1]),
                          btn.color[2] - min(rgb_change, btn.color[2] - HOVER[2]))
         # Revert back to original color of the button when cursor no longer hovers over it
         elif not btn.rect.collidepoint(pygame.mouse.get_pos()) and btn.color < WHITE and btn.active and not btn.clicked:
-            hovering.set()
+            btn_animate.set()
             btn.color = (btn.color[0] + min(rgb_change, WHITE[0] - btn.color[0]),
                          btn.color[1] + min(rgb_change, WHITE[1] - btn.color[1]),
                          btn.color[2] + min(rgb_change, WHITE[2] - btn.color[2]))
-        if btn.color == HOVER and btn.active:
-            FPS['idle'] = 20
         btn.draw()
 
-def swap_rectangles(rectangles: list, rect1: int, rect2: int, rect1_pos: Union[int, float], rect2_pos: Union[int, float], speed_adjust: list) -> None:
+def swap_rectangles(rectangles: list, swap_rect: dict, speed_adjust: list) -> None:
     # Swapping is complete if two rectangles have exchanged their positions
-    if rectangles[rect1].x == rect2_pos and rectangles[rect2].x == rect1_pos:
+    if rectangles[swap_rect['rect1']].x == swap_rect['rect2_pos'] and rectangles[swap_rect['rect2']].x == swap_rect['rect1_pos']:
         swapping.clear()
         return
 
     # Calculate the pixel difference between the two rectangles and scale up or down the swapping speed accordingly
     # This can ensure that the swapping animation of the two farthest rectangles is as fast as the swapping animation of the two closest rectangles
-    distance = rect2_pos - rect1_pos
+    distance = swap_rect['rect2_pos'] - swap_rect['rect1_pos']
     scaling = int(distance / (RECT_WIDTH + RECT_SPACING))
     
     # Scale the pixel per frame according to the current FPS
     pixel_per_frame = PIXEL_CHANGE[speed_adjust[0]] * scaling * (60 / FPS['active'])
 
     # Change both rectangles' x coordinates until one approaches the other's position
-    if rectangles[rect1].x < rect2_pos:
+    if rectangles[swap_rect['rect1']].x < swap_rect['rect2_pos']:
         # If pixel difference between destination and rectangle 1 is less than the pixels per frame, change pixel by the difference instead
-        rectangles[rect1].x += min(pixel_per_frame, rect2_pos - rectangles[rect1].x)
-    if rectangles[rect2].x > rect1_pos:
+        rectangles[swap_rect['rect1']].x += min(pixel_per_frame, swap_rect['rect2_pos'] - rectangles[swap_rect['rect1']].x)
+    if rectangles[swap_rect['rect2']].x > swap_rect['rect1_pos']:
         # If pixel difference between rectangle 2 and destination is less than the pixels per frame, change pixel by the difference instead
-        rectangles[rect2].x -= min(pixel_per_frame, rectangles[rect2].x - rect1_pos)
+        rectangles[swap_rect['rect2']].x -= min(pixel_per_frame, rectangles[swap_rect['rect2']].x - swap_rect['rect1_pos'])
