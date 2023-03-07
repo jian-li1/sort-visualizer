@@ -1,5 +1,6 @@
 # Sort Visualizer in Python
 A Python application using Pygame for visualizing various sorting algorithms.
+<br>
 <img width="300" alt="Screen Shot 2023-03-06 at 11 42 54 PM" src="https://user-images.githubusercontent.com/86862325/223356693-805cb4c1-9c37-4084-9841-df869f84e6c7.png"><img width="300" alt="Screen Shot 2023-03-06 at 11 44 13 PM" src="https://user-images.githubusercontent.com/86862325/223357012-d53e083f-4b03-4567-ba42-4a595a0c42b6.png">
 
 <br>
