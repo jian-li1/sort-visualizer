@@ -59,4 +59,4 @@ PIXEL_CHANGE = [i / 100 for i in range(25, (RECT_WIDTH + RECT_SPACING + 1) * 100
 sorting = threading.Event() # Is set when sorting operation is active
 playing = threading.Event() # Is set when sorting operation is being played
 swapping = threading.Event() # Is set when swapping is being animated
-hovering = threading.Event() # Is set when user hovers over a button; animates color change of the button
+btn_animate = threading.Event() # Is set when user hovers over a button; animates color change of the button
