@@ -63,3 +63,6 @@ btn_animate = threading.Event() # Is set when user hovers over a button; animate
 
 # Pivot line for quick sorting
 quick_sort_line = {'start': None, 'end': None}
+
+# Selected algorithm
+selected = {'alg': None, 'function': None}
