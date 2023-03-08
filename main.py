@@ -56,8 +56,6 @@ def main():
     speed_adjust = [len(PIXEL_CHANGE) // 3]
     scan_speed = [(RECT_WIDTH + RECT_SPACING) / PIXEL_CHANGE[speed_adjust[0]] / FPS['idle'] / 60 * FPS['idle']]
 
-    selected = {'alg': None, 'function': None}
-
     # Main operation of the program
     while True:
         # Fill user interface with white background
