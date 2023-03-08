@@ -4,7 +4,7 @@ import pygame
 from settings import *
 
 class Rectangle():
-    def __init__(self, number: int, x: Union[int, float], y: Union[int, float], height: Union[int, float], font: int=24, color: tuple=WHITE) -> None:
+    def __init__(self, number: int, x: Union[int, float], y: Union[int, float], height: Union[int, float], font: int=24, color: tuple=WHITE, text_color: tuple=BLACK) -> None:
         self.num = number
         self.x = x
         self.y = y
@@ -12,6 +12,7 @@ class Rectangle():
         self.height = height
         self.font = pygame.font.SysFont(None, font)
         self.color = color
+        self.text_color = text_color
         self.border = BLACK
 
     def draw(self) -> None:
@@ -20,7 +21,7 @@ class Rectangle():
         pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
         pygame.draw.rect(screen, self.border, (self.x, self.y, self.width, self.height), 3)
         # Display the number below each rectangle
-        self.number_surface = self.font.render(str(self.num), True, BLACK)
+        self.number_surface = self.font.render(str(self.num), True, self.text_color)
         self.number_rect = self.number_surface.get_rect(center=(self.x + self.width // 2, self.y + self.height + 20))
         screen.blit(self.number_surface , self.number_rect)
 
