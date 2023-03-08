@@ -5,7 +5,11 @@ A Python application using Pygame for visualizing various sorting algorithms.
 <img width="500" alt="Screen Shot 2023-03-06 at 11 44 13 PM" src="https://user-images.githubusercontent.com/86862325/223357012-d53e083f-4b03-4567-ba42-4a595a0c42b6.png">
 
 <br>
-Currenly we have Bubble Sort, Selection Sort, and Insertion Sort, but will be adding a few more sorting algorithms in future releases.
+Sorting Algorithms include:
+* Bubble Sort
+* Selection Sort
+* Insertion Sort
+* Quick Sort
 
 # Usage
 If your system doesn't have Python installed already, install it <a href="https://www.python.org/downloads/" target="_blank">here</a>.
