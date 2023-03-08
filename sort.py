@@ -3,7 +3,6 @@ from settings import *
 
 # Bubble Sort
 def bubble_sort(array: list, size: int, swap_index: dict, scan_speed: list) -> None:
-    time.sleep(0.2)
     i = 0
     while i < size - 1 and sorting.is_set():
         j = 0
@@ -47,7 +46,6 @@ def bubble_sort(array: list, size: int, swap_index: dict, scan_speed: list) -> N
 
 # Selection Sort
 def selection_sort(array: list, size: int, swap_index: dict, scan_speed: list) -> None:
-    time.sleep(0.2)
     i = 0
     min_index = i
 
@@ -112,7 +110,6 @@ def selection_sort(array: list, size: int, swap_index: dict, scan_speed: list) -
 
 # Insertion Sort
 def insertion_sort(array: list, size: int, swap_index: dict, scan_speed: list) -> None:
-    time.sleep(0.2)
     index = 0
     while index < size - 1 and sorting.is_set():
         i = index
