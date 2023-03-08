@@ -1,14 +1,9 @@
 import time
-import threading
 from settings import *
-
-# Create a threading lock to ensure that only one sorting thread runs at a time
-lock = threading.Lock()
 
 # Bubble Sort
 def bubble_sort(array: list, size: int, swap_index: dict, scan_speed: list) -> None:
     time.sleep(0.2)
-    lock.acquire()
     i = 0
     while i < size - 1 and sorting.is_set():
         j = 0
@@ -18,7 +13,7 @@ def bubble_sort(array: list, size: int, swap_index: dict, scan_speed: list) -> N
             array[j+1].color = RED
 
             time.sleep(scan_speed[0])
-            
+
             if array[j].num > array[j+1].num:
                 # Store the two rectangles' index and positions
                 swap_index['rect1'] = j
@@ -31,6 +26,7 @@ def bubble_sort(array: list, size: int, swap_index: dict, scan_speed: list) -> N
                     swapping.set()
                     while swapping.is_set():
                         time.sleep(0.01)
+
                     # Swap elements
                     array[j], array[j+1] = array[j+1], array[j]
 
@@ -40,12 +36,11 @@ def bubble_sort(array: list, size: int, swap_index: dict, scan_speed: list) -> N
             if not sorting.is_set(): break
 
             array[j].color = WHITE
-            array[j + 1].color = WHITE
+            array[j+1].color = WHITE
 
             j += 1
         i += 1
 
-    lock.release()
     sorting.clear()
     playing.clear()
     return
@@ -53,10 +48,10 @@ def bubble_sort(array: list, size: int, swap_index: dict, scan_speed: list) -> N
 # Selection Sort
 def selection_sort(array: list, size: int, swap_index: dict, scan_speed: list) -> None:
     time.sleep(0.2)
-    lock.acquire()
     i = 0
+    min_index = i
+
     while i < size and sorting.is_set():
-        min = array[i]
         min_index = i
 
         # Pause if requested by user
@@ -66,12 +61,14 @@ def selection_sort(array: list, size: int, swap_index: dict, scan_speed: list) -
 
         # Highlight the rectangle with the minimum value 
         if sorting.is_set(): array[min_index].color = RED
+
         time.sleep(scan_speed[0])
 
         j = i + 1
         while j < size and sorting.is_set():
             # Highlight the rectangle being scanned
             array[j].color = RED
+
             
             # Pause if requested by user
             playing.wait()
@@ -81,9 +78,8 @@ def selection_sort(array: list, size: int, swap_index: dict, scan_speed: list) -
             time.sleep(scan_speed[0])
 
             # Update current value to minimum value if current value if smaller than current minimum value
-            if array[j].num < min.num:
+            if array[j].num < array[min_index].num:
                 array[min_index].color = WHITE
-                min = array[j]
                 min_index = j
             else:
                 array[j].color = WHITE
@@ -101,7 +97,7 @@ def selection_sort(array: list, size: int, swap_index: dict, scan_speed: list) -
             swapping.set()
             while swapping.is_set():
                 time.sleep(0.01)
-                # Swap elements
+            # Swap elements
             array[i], array[min_index] = array[min_index], array[i]
 
         array[i].color = WHITE
@@ -110,14 +106,13 @@ def selection_sort(array: list, size: int, swap_index: dict, scan_speed: list) -
         i += 1
 
     array[min_index].color = WHITE
-    lock.release()
     sorting.clear()
     playing.clear()
     return
 
-def insertion_sort(array: list, size: int, swap_index: dict, scan_speed:  list) -> None:
+# Insertion Sort
+def insertion_sort(array: list, size: int, swap_index: dict, scan_speed: list) -> None:
     time.sleep(0.2)
-    lock.acquire()
     index = 0
     while index < size - 1 and sorting.is_set():
         i = index
@@ -169,7 +164,108 @@ def insertion_sort(array: list, size: int, swap_index: dict, scan_speed:  list) 
         
         index += 1
         
-    lock.release()
     sorting.clear()
     playing.clear()
     return
+
+# Quick Sort
+def quick_sort(array: list, end: int, swap_index: dict, scan_speed: list, start: int=0) -> None:
+    # Abort sorting operation if user clicked on "Stop"
+    if not sorting.is_set(): return
+    # Base case
+    if end <= start: return
+
+    # Set the length and height of the pivot line
+    quick_sort_line['start'] = (array[start].x, array[start].y)
+    quick_sort_line['end'] = (array[end - 1].x, array[end - 1].y)
+    
+    # Gray out the other rectangles that arent being compared in the current stack
+    for rect in array:
+        rect.border = HOVER
+        rect.text_color = HOVER
+
+    for i in range(start, end):
+        array[i].border = BLACK
+        array[i].text_color = BLACK
+
+    pivot = partition(array, start, end - 1, swap_index, scan_speed)
+
+    # Pause if requested by user
+    playing.wait()
+
+    quick_sort(array, start=start, end=pivot, swap_index=swap_index, scan_speed=scan_speed)
+    quick_sort(array, start=pivot + 1, end=end, swap_index=swap_index, scan_speed=scan_speed)
+    
+    if end - start == len(array):
+        # Reset all the rectangle's colors
+        for rect in array:
+            rect.border = BLACK
+            rect.text_color = BLACK
+        sorting.clear()
+        playing.clear()
+        return
+
+# Helper function for quick sort
+def partition(array: list, start: int, end: int, swap_index: dict, scan_speed: list) -> int:
+    # Set j as start and i as the element before start
+    j = start
+    i = start - 1
+
+    # Highlight the rectangle that is set as pivot
+    array[end].color = RED
+    
+    while j < end + 1 and sorting.is_set():
+        # Hightlight elements being compared
+        if i >= start: array[i].color = RED
+        array[j].color = RED
+
+        time.sleep(scan_speed[0])
+        if array[j].num < array[end].num:
+            if i >= start: array[i].color = WHITE
+            i += 1
+            array[i].color = RED
+            if i != j: time.sleep(scan_speed[0])
+
+            # Store the two rectangles' index and positions
+            swap_index['rect1'] = i
+            swap_index['rect2'] = j
+            swap_index['rect1_pos'] = array[i].x
+            swap_index['rect2_pos'] = array[j].x
+
+            # Begin swapping process on the GUI
+            if sorting.is_set(): 
+                swapping.set()
+                while swapping.is_set():
+                    time.sleep(0.01)
+                # Swap elements
+                array[i], array[j] = array[j], array[i]
+            
+        # Pause if requested by user
+        playing.wait()
+        # Abort sorting operation if user clicked on "Stop"
+        if not sorting.is_set(): break
+
+        array[j].color = WHITE
+        j += 1
+
+    array[i].color = WHITE
+    i += 1
+    array[end].color = RED
+
+    # Store the two rectangles' index and positions
+    swap_index['rect1'] = i
+    swap_index['rect2'] = end
+    swap_index['rect1_pos'] = array[i].x
+    swap_index['rect2_pos'] = array[end].x
+
+    # Begin swapping process on the GUI
+    if sorting.is_set(): 
+        swapping.set()
+        while swapping.is_set():
+            time.sleep(0.01)
+        # Swap elements
+        array[i], array[end] = array[end], array[i]
+
+    array[i].color = WHITE
+    array[end].color = WHITE
+    return i
