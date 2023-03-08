@@ -42,6 +42,8 @@ def bubble_sort(array: list, size: int, swap_index: dict, scan_speed: list) -> N
 
     sorting.clear()
     playing.clear()
+    selected['alg'] = None
+    selected['function'] = None
     return
 
 # Selection Sort
@@ -106,6 +108,8 @@ def selection_sort(array: list, size: int, swap_index: dict, scan_speed: list) -
     array[min_index].color = WHITE
     sorting.clear()
     playing.clear()
+    selected['alg'] = None
+    selected['function'] = None
     return
 
 # Insertion Sort
@@ -163,6 +167,8 @@ def insertion_sort(array: list, size: int, swap_index: dict, scan_speed: list) -
         
     sorting.clear()
     playing.clear()
+    selected['alg'] = None
+    selected['function'] = None
     return
 
 # Quick Sort
@@ -200,6 +206,8 @@ def quick_sort(array: list, end: int, swap_index: dict, scan_speed: list, start:
             rect.text_color = BLACK
         sorting.clear()
         playing.clear()
+        selected['alg'] = None
+        selected['function'] = None
         return
 
 # Helper function for quick sort
