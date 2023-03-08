@@ -25,7 +25,7 @@ def main():
         "Selection Sort": selection_sort,
         "Insertion Sort": insertion_sort,
         #"Merge Sort": None, # In development
-        #"Quick Sort": None # In development
+        "Quick Sort": quick_sort
     }
 
     # Create interactive buttons
@@ -151,6 +151,7 @@ def main():
             # Animate the swapping of the two rectangles
             swap_rectangles(rectangles, swap_rect, speed_adjust)
         
+        # If window is opened
         if pygame.display.get_active():
             btn_animate.clear()
             if idle_buttons_visible and len(threading.enumerate()) == 1:
@@ -158,8 +159,9 @@ def main():
                 draw_buttons(idle_buttons)
             elif sorting.is_set():
                 # Display "action" buttons when sorting operation is active
-                selected_alg = pygame.font.SysFont(None, 28).render(selected['alg'].text, True, BLACK)
-                screen.blit(selected_alg, (MARGIN[0], MARGIN[1]))
+                selected_alg = selected['alg'].text
+                display_info = pygame.font.SysFont(None, 28).render(f"{selected_alg}", True, BLACK)
+                screen.blit(display_info, (MARGIN[0], MARGIN[1]))
                 draw_buttons(action_buttons)
 
             # Display speed buttons
@@ -170,8 +172,13 @@ def main():
             fps_text = font.render("FPS: " + str(int(clock.get_fps())), True, BLACK)
             screen.blit(fps_text, (SCREEN_WIDTH - fps_text.get_width() - MARGIN[0], SCREEN_HEIGHT - fps_text.get_height() - MARGIN[1]))
 
-        # Update the screen and display all rectangles if window is opened
+            # Update the screen and display all rectangles
             draw_rectangles(rectangles)
+
+            # Pivot line for quick sorting
+            if sorting.is_set() and selected_alg == 'Quick Sort':        
+                pygame.draw.line(screen, BLACK, (quick_sort_line['start'][0], quick_sort_line['end'][1]), (quick_sort_line['end'][0] + RECT_WIDTH, quick_sort_line['end'][1]))
+
             pygame.display.flip()
 
         if (sorting.is_set() and playing.is_set()) or btn_animate.is_set() or swapping.is_set():
