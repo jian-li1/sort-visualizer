@@ -60,3 +60,6 @@ sorting = threading.Event() # Is set when sorting operation is active
 playing = threading.Event() # Is set when sorting operation is being played
 swapping = threading.Event() # Is set when swapping is being animated
 btn_animate = threading.Event() # Is set when user hovers over a button; animates color change of the button
+
+# Pivot line for quick sorting
+quick_sort_line = {'start': None, 'end': None}
