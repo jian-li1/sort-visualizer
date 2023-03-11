@@ -61,7 +61,7 @@ def main():
                 status['swapping'] = False
                 status['playing'].set()
                 # Only applicable to merge sorting
-                while selected['function'] == merge_sort and sort_thread.is_alive():
+                while sort_thread.is_alive():
                     status['moving'] = False
                     status['sub_sorting'] = False
                     status['merging'] = False
