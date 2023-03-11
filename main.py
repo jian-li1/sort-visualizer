@@ -157,6 +157,12 @@ def main():
         
         # Animate the merging of the sub arrays (merge sort)
         elif status['merging']: merge_rectangles(rectangles)
+
+        # Move rectangles up and down for merge sort
+        if status['moving'] and status['sorting']:
+            move_rectangles_up(rectangles)
+        elif status['moving'] and not status['sorting']:
+            move_rectangles_down(rectangles)
         
         # If window is opened
         if pygame.display.get_active():
@@ -184,12 +190,6 @@ def main():
             # Pivot line for quick sort
             if selected['function'] == quick_sort and status['sorting']:        
                 pygame.draw.line(screen, BLACK, (quick_sort_line['start'][0], quick_sort_line['end'][1]), (quick_sort_line['end'][0] + RECT_WIDTH, quick_sort_line['end'][1]))
-
-            # Move rectangles up and down for merge sort
-            if status['moving'] and status['sorting']:
-                move_rectangles_up(rectangles)
-            elif status['moving'] and not status['sorting']:
-                move_rectangles_down(rectangles)
 
             pygame.display.flip() # Update display
 
