@@ -1,7 +1,7 @@
 # Sort Visualizer in Python
 A Python application using Pygame for visualizing various sorting algorithms.
 
-<img width="500" alt="Screen Shot 2023-03-08 at 12 46 01 AM" src="https://user-images.githubusercontent.com/86862325/223665740-40afa390-313e-44d5-8919-7b03343b84b9.png">
+<img width="500" alt="Screen Shot 2023-03-10 at 10 56 59 PM" src="https://user-images.githubusercontent.com/86862325/224470104-f059a062-234c-4031-a7ce-05e471c418d7.png">
 <img width="500" alt="Screen Shot 2023-03-06 at 11 44 13 PM" src="https://user-images.githubusercontent.com/86862325/223357012-d53e083f-4b03-4567-ba42-4a595a0c42b6.png">
 
 Sorting Algorithms include:
