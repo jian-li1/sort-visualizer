@@ -10,8 +10,7 @@ Sorting Algorithms include:
  * Selection Sort
  * Insertion Sort
  * Quick Sort
- 
-Merge Sort coming soon!
+ * Merge Sort
 
 # Usage
 If your system doesn't have Python installed already, install it <a href="https://www.python.org/downloads/" target="_blank">here</a>.
