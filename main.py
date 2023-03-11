@@ -11,9 +11,6 @@ pygame.font.init()
 # Create a clock object for controlling frame rate
 clock = pygame.time.Clock()
 
-# Infomation for swapping two rectangles: both rectangles' index in the array and their positions (x coordinates)
-swap_rect = {'rect1': None, 'rect1_pos': None, 'rect2': None, 'rect2_pos': None}
-
 def main():
     # Set up the font object
     default_font_size = 24
@@ -24,7 +21,7 @@ def main():
         "Bubble Sort": bubble_sort,
         "Selection Sort": selection_sort,
         "Insertion Sort": insertion_sort,
-        #"Merge Sort": None, # In development
+        "Merge Sort": merge_sort,
         "Quick Sort": quick_sort
     }
 
@@ -43,8 +40,6 @@ def main():
     idle_buttons = [sort_btn for sort_btn in sort_algs.keys()] + [randomize_btn, start_btn]
     action_buttons = [stop_btn, pause_btn]
     speed_buttons = [slow_down_btn, speed_up_btn]
-    idle_buttons_visible = True
-    action_buttons_visible = False
 
     # Initialize list for storing elements and rectangles
     rectangles = []
@@ -52,9 +47,7 @@ def main():
     # Randomize the elements
     randomize_array(rectangles)
 
-    # Speed adjust of sorting
-    speed_adjust = [len(PIXEL_CHANGE) // 3]
-    scan_speed = [(RECT_WIDTH + RECT_SPACING) / PIXEL_CHANGE[speed_adjust[0]] / FPS['idle'] / 60 * FPS['idle']]
+    sort_thread = threading.Thread()
 
     # Main operation of the program
     while True:
@@ -64,13 +57,18 @@ def main():
         for event in pygame.event.get():
             # Abort the program and halt all sorting operations when user X out the window
             if event.type == pygame.QUIT:
-                sorting.clear()
-                swapping.clear()
-                playing.set()
+                status['sorting'] = False
+                status['swapping'] = False
+                status['playing'].set()
+                # Only applicable to merge sorting
+                while selected['function'] == merge_sort and sort_thread.is_alive():
+                    status['moving'] = False
+                    status['sub_sorting'] = False
+                    status['merging'] = False
                 pygame.quit()
                 return
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if not sorting.is_set() and not swapping.is_set():
+                if not status['sorting']:
                     pause_btn.text = "Pause"
                     # Randomize array if user clicked on "Randomize" button
                     if randomize_btn.rect.collidepoint(event.pos):
@@ -84,6 +82,7 @@ def main():
                             # Save the selected sorting algorithm
                             selected['alg'] = sort
                             selected['function'] = sort_algs[sort]
+                            selected['text'] = sort.text
                     # Reset color of sort buttons
                     for sort in sort_algs:
                         if sort_algs[sort] != selected['function']:
@@ -92,73 +91,82 @@ def main():
                         start_btn.click()
                         # Start sorting operation if there is a user has selected a sorting algorithm
                         if selected['function']:
-                            sorting.set()
-                            playing.set()
+                            status['sorting'] = True
+                            status['playing'].set()
                             # Begin sorting process and start a thread, target being the selected sorting algorithm
-                            sort_thread = threading.Thread(target=selected['function'], args=(rectangles, len(rectangles), swap_rect, scan_speed))
+                            sort_thread = threading.Thread(target=selected['function'], args=(rectangles, len(rectangles)))
                             sort_thread.start()
                             selected['alg'].active = True
                 # Abort sorting operation if user clicked on the "Stop" button
-                if stop_btn.rect.collidepoint(event.pos) and action_buttons_visible:
+                if stop_btn.rect.collidepoint(event.pos) and stop_btn.visible:
                     stop_btn.click()
-                    playing.set()
-                    sorting.clear()
+                    status['playing'].set()
+                    status['sorting'] = False
                     selected['alg'] = None
                     selected['function'] = None
+                    selected['text'] = ''
                 # Pause the sorting operation if user clicked on the "Pause" button
                 # Continue the sorting operation if user clicked on the "Continue" button
                 elif pause_btn.rect.collidepoint(event.pos):
                     pause_btn.click()
-                    playing.clear() if playing.is_set() else playing.set()
-                    pause_btn.text = "Pause" if playing.is_set() else "Continue"
+                    status['playing'].clear() if status['playing'].is_set() else status['playing'].set()
+                    pause_btn.text = "Pause" if status['playing'].is_set() else "Continue"
                 # Increase the speed of sorting until it is at highest speed
                 elif speed_up_btn.rect.collidepoint(event.pos):
-                    if speed_adjust[0] < len(PIXEL_CHANGE) - 1:
+                    if Speed.adjust < len(PIXEL_CHANGE) - 1:
                         slow_down_btn.active = True
                         speed_up_btn.click()
-                        speed_adjust[0] += 1
+                        Speed.adjust += 1
                         # Deactivate the speed down button if speed of sorting is at its lowest
-                        if speed_adjust[0] == len(PIXEL_CHANGE) - 1:
+                        if Speed.adjust == len(PIXEL_CHANGE) - 1:
                             speed_up_btn.active = False
                 # Decrease the speed of sorting until it is at lowest speed
                 elif slow_down_btn.rect.collidepoint(event.pos):
-                    if speed_adjust[0] > 0:
+                    if Speed.adjust > 0:
                         speed_up_btn.active = True
                         slow_down_btn.click()
-                        speed_adjust[0] -= 1
+                        Speed.adjust -= 1
                         # Deactivate the slow down button if speed of sorting is at its lowest
-                        if speed_adjust[0] == 0:
+                        if Speed.adjust == 0:
                             slow_down_btn.active = False
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 # Revert to hovering color if user releases the left mouse click
                 for btn in idle_buttons + action_buttons + speed_buttons:
                     btn.clicked = False
-                    if btn.rect.collidepoint(event.pos) or not btn.active:
+                    if (btn.rect.collidepoint(event.pos) or not btn.active) and btn.visible:
                         btn.color = HOVER
 
         # Make idle buttons hidden and action buttons shown when sorting
-        if sorting.is_set(): idle_buttons_visible, action_buttons_visible = False, True
-        else: idle_buttons_visible, action_buttons_visible = True, False
+        if status['sorting'] or sort_thread.is_alive(): 
+            for btn in idle_buttons: btn.visible = False
+            for btn in action_buttons: btn.visible = True
+        # Make idle buttons shown and action buttons hidden when idle
+        else:
+            for btn in idle_buttons: btn.visible = True
+            for btn in action_buttons: btn.visible = False
         
         # Reset button color if not visible on the window
         for btn in idle_buttons + action_buttons:
-            if btn in action_buttons and not action_buttons_visible: btn.color = WHITE
-            elif btn in idle_buttons and not idle_buttons_visible: btn.color = WHITE
+            if not btn.visible: btn.color = WHITE
         
-        if swapping.is_set():
-            # Animate the swapping of the two rectangles
-            swap_rectangles(rectangles, swap_rect, speed_adjust)
+        # Animate the swapping of the two rectangles
+        if status['swapping']: swap_rectangles(rectangles)
+
+        # Animate the sorting of the sub arrays (merge sort)
+        elif status['sub_sorting']: sorting_sub_rectangles(rectangles)
+        
+        # Animate the merging of the sub arrays (merge sort)
+        elif status['merging']: merge_rectangles(rectangles)
         
         # If window is opened
         if pygame.display.get_active():
-            btn_animate.clear()
-            if idle_buttons_visible and len(threading.enumerate()) == 1:
+            status['btn_animate'] = False
+            if not sort_thread.is_alive():
                 # Display "idle" buttons when sorting operation is not active
                 draw_buttons(idle_buttons)
-            elif sorting.is_set():
+            elif status['sorting']:
                 # Display "action" buttons when sorting operation is active
-                selected_alg = selected['alg'].text
-                display_info = pygame.font.SysFont(None, 28).render(f"{selected_alg}", True, BLACK)
+                display_info = pygame.font.SysFont(None, 28).render(f"{selected['text']}", True, BLACK)
                 screen.blit(display_info, (MARGIN[0], MARGIN[1]))
                 draw_buttons(action_buttons)
 
@@ -173,21 +181,27 @@ def main():
             # Update the screen and display all rectangles
             draw_rectangles(rectangles)
 
-            # Pivot line for quick sorting
-            if sorting.is_set() and selected_alg == 'Quick Sort':        
+            # Pivot line for quick sort
+            if selected['function'] == quick_sort and status['sorting']:        
                 pygame.draw.line(screen, BLACK, (quick_sort_line['start'][0], quick_sort_line['end'][1]), (quick_sort_line['end'][0] + RECT_WIDTH, quick_sort_line['end'][1]))
 
-            pygame.display.flip()
+            # Move rectangles up and down for merge sort
+            if status['moving'] and status['sorting']:
+                move_rectangles_up(rectangles)
+            elif status['moving'] and not status['sorting']:
+                move_rectangles_down(rectangles)
 
-        if (sorting.is_set() and playing.is_set()) or btn_animate.is_set() or swapping.is_set():
+            pygame.display.flip() # Update display
+
+        if (sort_thread.is_alive() and status['playing'].is_set()) or status['btn_animate'] or status['swapping'] or status['sub_sorting'] or status['merging']:
             # Set FPS to 60 if program is currently playing sorting animation or button hovering animation or swapping animation
             # Scale scan speed according to the current FPS
-            scan_speed[0] = (RECT_WIDTH + RECT_SPACING) / PIXEL_CHANGE[speed_adjust[0]] / 60 / FPS['active'] * 60
+            Speed.delay = (RECT_WIDTH + RECT_SPACING) / PIXEL_CHANGE[Speed.adjust] / 60 / FPS['active'] * 60
             clock.tick(FPS['active'])
         else:
             # Lower FPS if program is idle
             # Scale scan speed according to the current FPS
-            scan_speed[0] = (RECT_WIDTH + RECT_SPACING) / PIXEL_CHANGE[speed_adjust[0]] / FPS['idle'] / 60 * FPS['idle']
+            Speed.delay = (RECT_WIDTH + RECT_SPACING) / PIXEL_CHANGE[Speed.adjust] / FPS['idle'] / 60 * FPS['idle']
             clock.tick(FPS['idle'])
 
 if __name__ == "__main__":
