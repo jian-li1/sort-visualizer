@@ -1,4 +1,5 @@
 import time
+from typing import Union
 from settings import *
 
 def terminate() -> None:
@@ -7,6 +8,22 @@ def terminate() -> None:
     selected['alg'] = None
     selected['function'] = None
     selected['text'] = ''
+
+def swap(array: list, rect1: int, rect2: int) -> None:
+    # Store the two rectangles' index and positions
+    swap_rect['rect1'] = rect1
+    swap_rect['rect2'] = rect2
+    swap_rect['rect1_pos'] = array[rect1].x
+    swap_rect['rect2_pos'] = array[rect2].x
+
+    # Begin swapping process on the GUI
+    if status['sorting']: 
+        status['swapping'] = True
+        while status['swapping']:
+            time.sleep(0.01)
+
+        # Swap elements
+        array[rect1], array[rect2] = array[rect2], array[rect1]
 
 # Bubble Sort
 def bubble_sort(array: list, size: int) -> None:
@@ -21,20 +38,8 @@ def bubble_sort(array: list, size: int) -> None:
             time.sleep(Speed.delay)
 
             if array[j].num > array[j+1].num:
-                # Store the two rectangles' index and positions
-                swap_rect['rect1'] = j
-                swap_rect['rect2'] = j + 1
-                swap_rect['rect1_pos'] = array[j].x
-                swap_rect['rect2_pos'] = array[j+1].x
-
-                # Begin swapping process on the GUI
-                if status['sorting']: 
-                    status['swapping'] = True
-                    while status['swapping']:
-                        time.sleep(0.01)
-
-                    # Swap elements
-                    array[j], array[j+1] = array[j+1], array[j]
+                # Swap elements
+                swap(array, j, j + 1)
 
             # Pause if requested by user
             status['playing'].wait()
@@ -90,19 +95,8 @@ def selection_sort(array: list, size: int) -> None:
 
             j += 1
 
-        # Store the two rectangles' index and positions
-        swap_rect['rect1'] = i
-        swap_rect['rect2'] = min_index
-        swap_rect['rect1_pos'] = array[i].x
-        swap_rect['rect2_pos'] = array[min_index].x
-
-        # Begin swapping process on the GUI
-        if status['sorting']: 
-            status['swapping'] = True
-            while status['swapping']:
-                time.sleep(0.01)
-            # Swap elements
-            array[i], array[min_index] = array[min_index], array[i]
+        # Swap elements
+        swap(array, i, min_index)
 
         array[i].color = WHITE
         array[min_index].color = WHITE
@@ -132,19 +126,8 @@ def insertion_sort(array: list, size: int) -> None:
 
             time.sleep(Speed.delay)
             
-            # Store the two rectangles' index and positions
-            swap_rect['rect1'] = i
-            swap_rect['rect2'] = j
-            swap_rect['rect1_pos'] = array[i].x
-            swap_rect['rect2_pos'] = array[j].x
-
-            # Begin swapping process on the GUI
-            if status['sorting']: 
-                status['swapping'] = True
-                while status['swapping']:
-                    time.sleep(0.01)
-                # Swap elements
-                array[i], array[j] = array[j], array[i]
+            # Swap elements
+            swap(array, i, j)
             
             # Pause if requested by user
             status['playing'].wait()
@@ -226,19 +209,8 @@ def partition(array: list, start: int, end: int) -> int:
             array[i].color = RED
             if i != j: time.sleep(Speed.delay)
 
-            # Store the two rectangles' index and positions
-            swap_rect['rect1'] = i
-            swap_rect['rect2'] = j
-            swap_rect['rect1_pos'] = array[i].x
-            swap_rect['rect2_pos'] = array[j].x
-
-            # Begin swapping process on the GUI
-            if status['sorting']: 
-                status['swapping'] = True
-                while status['swapping']:
-                    time.sleep(0.01)
-                # Swap elements
-                array[i], array[j] = array[j], array[i]
+            # Swap elements
+            swap(array, i, j)
             
         # Pause if requested by user
         status['playing'].wait()
@@ -252,19 +224,8 @@ def partition(array: list, start: int, end: int) -> int:
     i += 1
     array[end].color = RED
 
-    # Store the two rectangles' index and positions
-    swap_rect['rect1'] = i
-    swap_rect['rect2'] = end
-    swap_rect['rect1_pos'] = array[i].x
-    swap_rect['rect2_pos'] = array[end].x
-
-    # Begin swapping process on the GUI
-    if status['sorting']: 
-        status['swapping'] = True
-        while status['swapping']:
-            time.sleep(0.01)
-        # Swap elements
-        array[i], array[end] = array[end], array[i]
+    # Swap elements
+    swap(array, i, end)
 
     array[i].color = WHITE
     array[end].color = WHITE
@@ -274,17 +235,13 @@ def partition(array: list, start: int, end: int) -> int:
 def merge_sort(array: list, end: int, start: int=0) -> None:
     # Move rectangles up from initial call stack
     if end - start == len(array):
-        status['moving'] = True
-        while status['moving']:
-            time.sleep(0.01)
+        shift_rectangles()
 
     # Abort sorting operation if user clicked on "Stop"
     if not status['sorting']:
         # Move rectangles down
-        status['moving'] = True
-        while status['moving']:
-            time.sleep(0.01)
-        status['playing'].clear()
+        shift_rectangles()
+        terminate()
         return
 
     # Pause if requested by user
@@ -302,8 +259,7 @@ def merge_sort(array: list, end: int, start: int=0) -> None:
     time.sleep(Speed.delay * 2)
 
     # Base case
-    if end - start == 1:
-        return
+    if end - start == 1: return
     
     # Determine midpoint
     mid = (start + end) // 2
@@ -314,7 +270,6 @@ def merge_sort(array: list, end: int, start: int=0) -> None:
     # Create a temporary array for storing sorted subarray
     temp = []
     i, j = start, mid
-    
     start_pos = array[start].x
     
     # Highlight rectangles in subarray
@@ -332,56 +287,30 @@ def merge_sort(array: list, end: int, start: int=0) -> None:
         status['playing'].wait()
 
         if array[i].num < array[j].num:
-            # Store the rectangle's index and position
-            sub_sort['rect'] = i
-            sub_sort['rect_x_pos'] = array[i].x
+            # Sort subarray
+            sort_subarray_gui(array, i, start_pos + (RECT_WIDTH + RECT_SPACING) * (len(temp)))
             temp.append(array[i])
             i += 1
         else:
-            # Store the rectangle's index and position
-            sub_sort['rect'] = j
-            sub_sort['rect_x_pos'] = array[j].x
+            # Sort subarray
+            sort_subarray_gui(array, j, start_pos + (RECT_WIDTH + RECT_SPACING) * (len(temp)))
             temp.append(array[j])
             j += 1
-            
-        # Store the rectangle's stopping position
-        sub_sort['rect_pos_dest'] = start_pos + (RECT_WIDTH + RECT_SPACING) * (len(temp) - 1)
-
-        # Begin subarray sorting process on the GUI
-        status['sub_sorting'] = True
-        while status['sub_sorting']:            
-            time.sleep(0.01)
         
     while i < mid:
         # Pause if requested by user
         status['playing'].wait()
-
-        # Store the rectangle's index and position
-        sub_sort['rect'] = i
-        sub_sort['rect_x_pos'] = array[i].x
-        sub_sort['rect_pos_dest'] = start_pos + (RECT_WIDTH + RECT_SPACING) * len(temp)
+        # Sort subarray
+        sort_subarray_gui(array, i, start_pos + (RECT_WIDTH + RECT_SPACING) * len(temp))
         temp.append(array[i])
-
-        # Begin subarray sorting process on the GUI
-        status['sub_sorting'] = True
-        while status['sub_sorting']:       
-            time.sleep(0.01)
         i += 1
 
     while j < end:
         # Pause if requested by user
         status['playing'].wait()
-
-        # Store the rectangle's index and position
-        sub_sort['rect'] = j
-        sub_sort['rect_x_pos'] = array[j].x
-        sub_sort['rect_pos_dest'] = start_pos + (RECT_WIDTH + RECT_SPACING) * len(temp)
+        # Sort subarray
+        sort_subarray_gui(array, j, start_pos + (RECT_WIDTH + RECT_SPACING) * len(temp))    
         temp.append(array[j])
-
-        # Begin subarray sorting process on the GUI
-        status['sub_sorting'] = True
-        while status['sub_sorting']:
-            time.sleep(0.01)
         j += 1
 
     # Pause if requested by user
@@ -390,12 +319,7 @@ def merge_sort(array: list, end: int, start: int=0) -> None:
     # Merge rectangles
     for k in range(end - start):
         array[start + k] = temp[k]
-
-    # Begin merging process on the GUI
-    merge_rect[0], merge_rect[1] = start, end
-    status['merging'] = True
-    while status['merging']:
-        time.sleep(0.01)
+    merge_subarray_gui(start, end)
     
     # Pause if requested by user
     status['playing'].wait()
@@ -404,9 +328,31 @@ def merge_sort(array: list, end: int, start: int=0) -> None:
     if end - start == len(array):
         status['sorting'] = False
         # Move rectangles down
-        status['moving'] = True
-        while status['moving']:
-            time.sleep(0.01)
+        shift_rectangles()
 
         terminate()
         return
+
+def shift_rectangles() -> None:
+    status['moving'] = True
+    while status['moving']:
+        time.sleep(0.01)
+
+def sort_subarray_gui(array: list, index: int, stopping_pos: Union[int, float]) -> None:
+    # Store the rectangle's index and position
+    sub_sort['rect'] = index
+    sub_sort['rect_x_pos'] = array[index].x
+    # Store the rectangle's stopping position
+    sub_sort['rect_pos_dest'] = stopping_pos
+
+    # Begin subarray sorting process on the GUI
+    status['sub_sorting'] = True
+    while status['sub_sorting']:
+        time.sleep(0.01)
+
+def merge_subarray_gui(start: int, end: int) -> None:
+    # Begin merging process on the GUI
+    merge_rect[0], merge_rect[1] = start, end
+    status['merging'] = True
+    while status['merging']:
+        time.sleep(0.01)
