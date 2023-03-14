@@ -109,17 +109,17 @@ def selection_sort(array: list, size: int) -> None:
 
 # Insertion Sort
 def insertion_sort(array: list, size: int) -> None:
-    index = 0
-    while index < size - 1 and status['sorting']:
+    index = 1
+    while index < size and status['sorting']:
         i = index
-        j = i + 1
+        j = i - 1
 
         # Pause if requested by user
         status['playing'].wait()
         # Abort sorting operation if user clicked on "Stop"
         if not status['sorting']: break
 
-        while array[j].num < array[i].num and i >= 0 and status['sorting']:
+        while array[i].num < array[j].num and j >= 0 and status['sorting']:
             # Highlight the two elements being compared
             array[i].color = RED
             array[j].color = RED
@@ -127,7 +127,7 @@ def insertion_sort(array: list, size: int) -> None:
             time.sleep(Speed.delay)
             
             # Swap elements
-            swap(array, i, j)
+            swap(array, j, i)
             
             # Pause if requested by user
             status['playing'].wait()
@@ -142,10 +142,10 @@ def insertion_sort(array: list, size: int) -> None:
 
         # Highlight the two elements being compared
         array[index].color = RED
-        array[index+1].color = RED
+        array[index-1].color = RED
         time.sleep(Speed.delay)
         array[index].color = WHITE
-        array[index+1].color = WHITE
+        array[index-1].color = WHITE
         
         index += 1
         
