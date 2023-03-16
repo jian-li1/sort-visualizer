@@ -267,6 +267,19 @@ def merge_sort(array: list, end: int, start: int=0) -> None:
     merge_sort(array, start=start, end=mid)
     merge_sort(array, start=mid, end=end)
 
+    merge(array, start, mid, end)
+
+    # Terminate sorting operation from initial call stack 
+    if end - start == len(array):
+        status['sorting'] = False
+        # Move rectangles down
+        shift_rectangles()
+
+        terminate()
+        return
+
+def merge(array, start, mid, end):
+
     # Create a temporary array for storing sorted subarray
     temp = []
     i, j = start, mid
@@ -323,15 +336,6 @@ def merge_sort(array: list, end: int, start: int=0) -> None:
     
     # Pause if requested by user
     status['playing'].wait()
-
-    # Terminate sorting operation from initial call stack 
-    if end - start == len(array):
-        status['sorting'] = False
-        # Move rectangles down
-        shift_rectangles()
-
-        terminate()
-        return
 
 def shift_rectangles() -> None:
     status['moving'] = True
