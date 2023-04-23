@@ -15,7 +15,7 @@ try:
     if platform.system() == "Darwin":
         img_path = os.path.join(root_dir, 'assets', 'icon_1024x1024.png')
     else:
-        img_path = os.path.join(root_dir, 'assets', 'app_icon.jpg')
+        img_path = os.path.join(root_dir, 'assets', 'app_icon.JPG')
 except FileNotFoundError:
     pass
 
