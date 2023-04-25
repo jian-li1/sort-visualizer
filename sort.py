@@ -266,6 +266,14 @@ def merge_sort(array: list, end: int, start: int=0) -> None:
 
     merge_sort(array, start=start, end=mid)
     merge_sort(array, start=mid, end=end)
+    
+    # Highlight rectangles in subarray
+    for k in range(start, end):
+        array[k].border = BLACK
+        array[k].text_color = BLACK
+
+    # Abort sorting operation if user clicked on "Stop"
+    if not status['sorting']: return
 
     merge(array, start, mid, end)
 
@@ -282,17 +290,11 @@ def merge_sort(array: list, end: int, start: int=0) -> None:
         return
 
 def merge(array, start, mid, end):
-
     # Create a temporary array for storing sorted subarray
     temp = []
     i, j = start, mid
     start_pos = array[start].x
-    
-    # Highlight rectangles in subarray
-    for k in range(start, end):
-        array[k].border = BLACK
-        array[k].text_color = BLACK
-    
+
     # Abort sorting operation if user clicked on "Stop"
     if not status['sorting']: return
     
