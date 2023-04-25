@@ -290,7 +290,6 @@ def merge_sort(array: list, end: int, start: int=0) -> None:
         return
 
 def merge(array, start, mid, end):
-
     # Create a temporary array for storing sorted subarray
     temp = []
     i, j = start, mid
